@@ -1,0 +1,81 @@
+name: Fetch CricHeroes Data & Deploy
+
+on:
+  # ── Scheduled runs ──────────────────────────────────────
+  schedule:
+    - cron: '0 0,6,12,18 * * *'   # Every 6 hours (UTC) = 5:30 AM, 11:30 AM, 5:30 PM, 11:30 PM IST
+
+  # ── Manual trigger from GitHub UI ───────────────────────
+  workflow_dispatch:
+
+  # ── Also runs on every push to main ─────────────────────
+  push:
+    branches: [main]
+
+permissions:
+  contents: write   # needed to commit updated dugout_devils_data.json back
+
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Python
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. Install dependencies
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # 4. Run the data fetcher
+      #    Cookies are read from GitHub repository secrets:
+      #      Settings → Secrets and variables → Actions → New repository secret
+      #        CRICHEROES_UDID   → your udid cookie value  (stable, rarely changes)
+      #        CRICHEROES_CF_BM  → your __cf_bm cookie     (shorter-lived, update monthly)
+      - name: Fetch CricHeroes data
+        env:
+          CRICHEROES_UDID:  ${{ secrets.CRICHEROES_UDID }}
+          CRICHEROES_CF_BM: ${{ secrets.CRICHEROES_CF_BM }}
+        run: python main.py
+        # If the fetch fails (expired cookies / API change), the workflow fails
+        # but the old dugout_devils_data.json stays in place — the site still works
+
+      # 5. Commit the updated JSON back to the repo (only if it changed)
+      - name: Commit updated data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dugout_devils_data.json
+          # Only commit if there's actually a change
+          git diff --cached --quiet || git commit -m "chore: update CricHeroes data [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+          git push
+
+      # 6. Deploy to GitHub Pages
+      #    (GitHub Pages must be enabled in repo Settings → Pages → Source: GitHub Actions)
+      - name: Deploy to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'     # serve the entire repo root (index.html + dugout_devils_data.json)
+
+  deploy-pages:
+    needs: fetch-and-deploy
+    runs-on: ubuntu-latest
+    # Only deploy on pushes to main (not on every scheduled fetch)
+    # Remove this condition if you want every scheduled fetch to also redeploy Pages
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

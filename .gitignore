@@ -1,0 +1,14 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# macOS
+.DS_Store
+
+# Don't ignore the data JSON — it's committed by GitHub Actions
+# !dugout_devils_data.json
