@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-07T16:19:02.632649+00:00",
+  "lastUpdated": "2026-04-07T16:19:32.263342+00:00",
   "team": {
     "team_id": 11061119,
     "team_name": "Dugout Devils",
@@ -40,7 +40,9 @@
     "share_app_message_matches": "Explore all the matches played by Dugout Devils, only on CricHeroes. \nhttps://chshare.link/team/gSMn9n",
     "is_club_team_admin": 0,
     "is_award_winner": 0,
-    "awards_link": ""
+    "awards_link": "",
+    "is_user_part_of_team": 1,
+    "can_user_view_qr_code": 1
   },
   "stats": [
     {
