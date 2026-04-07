@@ -34,19 +34,19 @@
     }
 
     :root {
-      --navy: #0a1628;
-      --navy2: #0d1f3c;
-      --green: #1a472a;
-      --green2: #1f5233;
-      --gold: #d4af37;
-      --gold2: #e8c84a;
+      --navy: #0e0e11;
+      --navy2: #16161a;
+      --green: #2c1605;
+      --green2: #4a2103;
+      --gold: #ff6600;
+      --gold2: #ff8533;
       --white: #ffffff;
-      --gray: #8a9ab5;
-      --card: #111d35;
-      --card2: #162340;
-      --border: #1e3050;
+      --gray: #a1a6ab;
+      --card: #18181c;
+      --card2: #24242a;
+      --border: #333333;
       --radius: 14px;
-      --shadow: 0 8px 32px rgba(0, 0, 0, .45);
+      --shadow: 0 8px 32px rgba(255, 102, 0, 0.08); /* slight orange tint shadow */
       --transition: all .3s ease;
     }
 
@@ -419,7 +419,7 @@
       letter-spacing: 4px;
       line-height: .95;
       margin-bottom: 24px;
-      background: linear-gradient(135deg, #ffffff 0%, var(--gold) 60%, #e8c84a 100%);
+      background: linear-gradient(135deg, #ffffff 0%, var(--gold) 60%, var(--gold2) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -681,7 +681,8 @@
 
     .ch-na-panel {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+      justify-content: center;
       gap: 16px;
       margin-top: 0;
     }
@@ -762,8 +763,20 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .stat-card {
@@ -831,7 +844,8 @@
 
     .roster-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 260px));
+      justify-content: center;
       gap: 20px;
     }
 
@@ -1342,7 +1356,8 @@
 
     .achievements-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
+      justify-content: center;
       gap: 20px;
     }
 
@@ -1415,25 +1430,13 @@
     }
 
     .gallery-grid {
-      columns: 4;
-      column-gap: 14px;
-    }
-
-    @media (max-width: 1024px) {
-      .gallery-grid {
-        columns: 3;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .gallery-grid {
-        columns: 2;
-      }
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
+      justify-content: center;
+      gap: 14px;
     }
 
     .gallery-item {
-      break-inside: avoid;
-      margin-bottom: 14px;
       border-radius: 10px;
       overflow: hidden;
       position: relative;
@@ -2005,7 +2008,8 @@
 
     .schedule-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 360px));
+      justify-content: center;
       gap: 20px;
     }
 
@@ -2302,7 +2306,7 @@
         <a href="https://cricheroes.com/team-profile/11061119/dugout-devils/members" target="_blank"
           rel="noopener noreferrer"
           style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:var(--gray);padding:7px 18px;border-radius:20px;font-size:.78rem;font-weight:600;letter-spacing:.5px;text-decoration:none;transition:all .3s;"
-          onmouseover="this.style.borderColor='rgba(212,175,55,.4)';this.style.color='var(--gold)'"
+          onmouseover="this.style.borderColor='rgba(255, 102, 0,.4)';this.style.color='var(--gold)'"
           onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='var(--gray)'">
           <i class="fa-solid fa-cricket-bat-ball" style="color:var(--gold);"></i> View on CricHeroes
         </a>
@@ -2498,11 +2502,6 @@
         <h2 class="section-title">Meet the <span class="gold-text">Players</span></h2>
         <div class="divider"></div>
         <p class="section-subtitle">15 warriors, one dream — to conquer every pitch they step on.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px;margin-bottom:28px;">
-          <button class="btn-add-match" onclick="openPlayerModal()">
-            <i class="fa-solid fa-user-plus"></i> Add Player
-          </button>
-        </div>
       </div>
       <div class="roster-grid" id="rosterGrid"></div>
     </div>
@@ -2631,11 +2630,9 @@
           <option value="D">Draws</option>
           <option value="NR">No Result</option>
         </select>
-        <button class="btn-add-match" onclick="openModal()">
-          <i class="fa-solid fa-plus"></i> Add Match
-        </button>
+
         <button class="btn-reset-data" onclick="loadCricHeroesData()" title="Reset to CricHeroes live data"
-          style="background:linear-gradient(135deg,rgba(212,175,55,.15),rgba(212,175,55,.08));border-color:rgba(212,175,55,.3);color:var(--gold);">
+          style="background:linear-gradient(135deg,rgba(255, 102, 0,.15),rgba(255, 102, 0,.08));border-color:rgba(255, 102, 0,.3);color:var(--gold);">
           <i class="fa-solid fa-cricket-bat-ball"></i> Load CricHeroes Data
         </button>
         <button class="btn-reset-data" onclick="resetData()" title="Reset to sample data">
@@ -2687,11 +2684,11 @@
       </div>
       <div class="performers-grid fade-in" style="display:block;">
         <div style="
-          background:rgba(212,175,55,.06); border:1px solid rgba(212,175,55,.2);
+          background:rgba(255, 102, 0,.06); border:1px solid rgba(255, 102, 0,.2);
           border-radius:16px; padding:2.5rem 2rem; text-align:center;
           max-width:640px; margin:0 auto;
         ">
-          <i class="fa-solid fa-lock" style="font-size:2.5rem;color:rgba(212,175,55,.4);margin-bottom:1rem;"></i>
+          <i class="fa-solid fa-lock" style="font-size:2.5rem;color:rgba(255, 102, 0,.4);margin-bottom:1rem;"></i>
           <h3 style="color:var(--gold);margin:0 0 .5rem;">PRO Feature — Not Available</h3>
           <p style="color:var(--gray);margin:0 0 1.5rem;font-size:.92rem;line-height:1.7;">
             Individual leaderboard stats (top scorer, wicket-taker, strike rate) are gated behind CricHeroes PRO.<br>
@@ -2720,11 +2717,7 @@
         <h2 class="section-title">Upcoming <span class="gold-text">Fixtures</span></h2>
         <div class="divider"></div>
         <p class="section-subtitle">Mark your calendars — the Devils are battle-ready.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px;margin-bottom:28px;">
-          <button class="btn-add-match" onclick="openFixtureModal()">
-            <i class="fa-solid fa-plus"></i> Add Fixture
-          </button>
-        </div>
+
       </div>
       <div class="fixtures-list fade-in" id="fixturesList"></div>
     </div>
@@ -2742,11 +2735,7 @@
         <h2 class="section-title">Our <span class="gold-text">Achievements</span></h2>
         <div class="divider"></div>
         <p class="section-subtitle">Trophies, titles, and milestones that define the Dugout Devils legacy.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px;margin-bottom:28px;">
-          <button class="btn-add-match" onclick="openAchievementModal()">
-            <i class="fa-solid fa-plus"></i> Add Achievement
-          </button>
-        </div>
+
       </div>
       <div class="achievements-grid fade-in" id="achievementsGrid"></div>
     </div>
@@ -3676,10 +3665,7 @@
           <div class="player-name">${nameHtml}</div>
           <span class="player-role ${roleClass(p.role)}">${p.role}</span>
           <div class="player-stat">${p.stats}</div>
-          <div class="card-actions">
-            <button class="action-btn edit" onclick="openPlayerModal(${i})"><i class="fa-solid fa-pen"></i> Edit</button>
-            <button class="action-btn del"  onclick="deletePlayer(${i})"><i class="fa-solid fa-trash-can"></i></button>
-          </div>
+
         </div>`;
       }).join('');
     }
@@ -3713,8 +3699,7 @@
           <td style="white-space:nowrap;">
             <button class="btn-scorecard" onclick="openScorecardModal(${realIdx})" title="Scorecard"><i class="fa-solid fa-list-ol"></i></button>
             ${m.matchId ? `<a href="https://cricheroes.com/scorecard/${m.matchId}/dugout-devils/live" target="_blank" rel="noopener noreferrer" class="btn-scorecard" title="CricHeroes" style="margin-left:4px;color:var(--gold);text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>` : ''}
-            <button class="del-btn" onclick="openModal(${realIdx})" title="Edit" style="color:rgba(212,175,55,.5);margin-left:4px;"><i class="fa-solid fa-pen"></i></button>
-            <button class="del-btn" onclick="deleteMatch(${realIdx})" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+
           </td>
         </tr>`;
       }).join('');
@@ -3747,7 +3732,7 @@
     function renderFixtures() {
       const list = document.getElementById('fixturesList');
       if (!fixtureData.length) {
-        list.innerHTML = `<div style="text-align:center;color:var(--gray);padding:32px;">No fixtures scheduled. Click <strong style="color:var(--gold)">Add Fixture</strong> to add one.</div>`;
+        list.innerHTML = `<div style="text-align:center;color:var(--gray);padding:32px;">No fixtures scheduled.</div>`;
         return;
       }
       list.innerHTML = fixtureData.map((f, i) => `
@@ -3765,10 +3750,7 @@
             <div class="fixture-venue"><i class="fa-solid fa-location-dot"></i>${f.venue}</div>
             <span class="fixture-tournament">${f.tournament}</span>
           </div>
-          <div class="card-actions">
-            <button class="action-btn edit" onclick="openFixtureModal(${i})"><i class="fa-solid fa-pen"></i> Edit</button>
-            <button class="action-btn del"  onclick="deleteFixture(${i})"><i class="fa-solid fa-trash-can"></i> Delete</button>
-          </div>
+
         </div>`).join('');
     }
 
@@ -3778,7 +3760,7 @@
     function renderAchievements() {
       const grid = document.getElementById('achievementsGrid');
       if (!achievementData.length) {
-        grid.innerHTML = `<div style="text-align:center;color:var(--gray);padding:32px;grid-column:1/-1;">No achievements yet. Click <strong style="color:var(--gold)">Add Achievement</strong> to add one.</div>`;
+        grid.innerHTML = `<div style="text-align:center;color:var(--gray);padding:32px;grid-column:1/-1;">No achievements yet.</div>`;
         return;
       }
       grid.innerHTML = achievementData.map((a, i) => `
@@ -3787,10 +3769,7 @@
           <div class="achievement-title">${a.title}</div>
           <div class="achievement-desc">${a.desc}</div>
           <span class="achievement-year">${a.year}</span>
-          <div class="card-actions">
-            <button class="action-btn edit" onclick="openAchievementModal(${i})"><i class="fa-solid fa-pen"></i> Edit</button>
-            <button class="action-btn del"  onclick="deleteAchievement(${i})"><i class="fa-solid fa-trash-can"></i> Delete</button>
-          </div>
+
         </div>`).join('');
     }
 
@@ -3901,20 +3880,7 @@
         </div>`;
       }).join('');
 
-      /* Minimal placeholders if gallery is mostly empty */
-      let placeholderHTML = '';
-      if (uploaded.length < 3) {
-        const needed = 3 - uploaded.length;
-        placeholderHTML = galleryItems.slice(0, needed).map(g => `
-          <div class="gallery-item">
-            <div class="gallery-placeholder" style="height:200px;background:${g.bg};">
-              <i class="fa-solid ${g.icon}"></i>
-            </div>
-            <div class="gallery-caption">More photos coming soon...</div>
-          </div>`).join('');
-      }
-
-      grid.innerHTML = (uploadedHTML + placeholderHTML) || `<div style="text-align:center;color:var(--gray);grid-column:1/-1;padding:40px;">No photos available.</div>`;
+      grid.innerHTML = uploadedHTML || `<div style="text-align:center;color:var(--gray);grid-column:1/-1;padding:40px;">No photos available.</div>`;
     }
 
     /* ══════════════════════════════════════
