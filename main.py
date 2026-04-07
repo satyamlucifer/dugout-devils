@@ -92,17 +92,39 @@ def fmt_date(iso: str) -> str:
 
 
 # ─────────────────────────────────────────────
-# Auto-detect buildId from page HTML
+# Auto-detect buildId from page HTML (with fallback)
 # ─────────────────────────────────────────────
 
+OUT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dugout_devils_data.json")
+
+def _cached_build_id() -> str:
+    """Read the last successfully cached buildId from the local JSON."""
+    try:
+        with open(OUT_PATH) as f:
+            return json.load(f).get("buildId", "")
+    except Exception:
+        return ""
+
+
 def get_build_id() -> str:
+    """Try to scrape buildId from the page. On 403/network error, use cached value."""
     url = f"{BASE}/team-profile/{TEAM_ID}/{TEAM_SLUG}/matches"
-    r = next_session.get(url, timeout=15)
-    r.raise_for_status()
-    m = re.search(r'"buildId":"([^"]+)"', r.text)
-    if m:
-        return m.group(1)
-    raise ValueError("Could not find buildId in page HTML")
+    try:
+        r = next_session.get(url, timeout=15)
+        r.raise_for_status()
+        m = re.search(r'"buildId":"([^"]+)"', r.text)
+        if m:
+            return m.group(1)
+        print("  ⚠️  Could not parse buildId from HTML — trying cached value")
+    except Exception as e:
+        print(f"  ⚠️  HTML fetch blocked ({e}) — trying cached buildId")
+
+    cached = _cached_build_id()
+    if cached:
+        print(f"  🔄  Using cached buildId: {cached}")
+        return cached
+
+    raise ValueError("No buildId available — run locally first to populate cache")
 
 
 # ─────────────────────────────────────────────
@@ -459,12 +481,11 @@ def main():
 
         # ── Build and save JSON ──
         website_json = build_website_json(stats_tab, matches_tab, members_tab, photos)
+        website_json["buildId"] = build_id   # ← cache so CI can reuse it on next run
 
-        out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dugout_devils_data.json")
-        
         # Preserve user-added static data (schedule, achievements)
-        if os.path.exists(out_path):
-            with open(out_path, "r") as f:
+        if os.path.exists(OUT_PATH):
+            with open(OUT_PATH, "r") as f:
                 try:
                     existing = json.load(f)
                     if "schedule" in existing:
@@ -474,10 +495,10 @@ def main():
                 except Exception as e:
                     print(f"  ⚠️  Could not read existing JSON for manual data: {e}")
 
-        with open(out_path, "w") as f:
+        with open(OUT_PATH, "w") as f:
             json.dump(website_json, f, indent=2, default=str)
 
-        print(f"\n  ✅ Saved → {out_path}")
+        print(f"\n  ✅ Saved → {OUT_PATH}")
         d = website_json["derived"]
         print(f"  📊 {d['played']} matches · {d['wins']}W / {d['losses']}L · {d['winPct']}% win rate")
         print(f"  👥 {len(website_json['members'])} squad members")
