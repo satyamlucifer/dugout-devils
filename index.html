@@ -3871,13 +3871,7 @@
         return `
         <div class="gallery-item gallery-uploaded">
           <img src="${src}" alt="${cap}" style="width:100%;display:block;min-height:200px;object-fit:cover;border-radius:10px;" loading="lazy" />
-          <div class="gallery-overlay" style="border-radius:10px;">
-            <button onclick="deleteGalleryPhoto(${i})"
-              style="background:rgba(231,76,60,.85);border:none;color:#fff;padding:9px 16px;border-radius:6px;cursor:pointer;font-size:.85rem;font-family:Poppins,sans-serif;font-weight:600;">
-              <i class="fa-solid fa-trash-can"></i> Remove
-            </button>
-          </div>
-          <div class="gallery-caption">${cap}</div>
+          ${cap ? `<div class="gallery-caption">${cap}</div>` : ''}
         </div>`;
       }).join('');
 
