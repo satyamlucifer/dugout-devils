@@ -3254,7 +3254,7 @@
     const SCHEDULE_KEY = 'dugout_devils_schedule';
     // Bump this whenever DEFAULT_MATCHES / DEFAULT_FIXTURES are updated with real CricHeroes data
     const DATA_VERSION_KEY = 'dugout_devils_data_version';
-    const CURRENT_DATA_VERSION = '2026-04-07-cricheroes';
+    const CURRENT_DATA_VERSION = '2026-04-13-cricheroes';
 
     /* ─── DEFAULT DATA ─── */
     const DEFAULT_PLAYERS = [];
@@ -3273,10 +3273,7 @@
       { date: '2026-03-28', opponent: 'Strikers', venue: 'Pitch Perfect Sports Club Ground D, Bengaluru', result: 'W', runs: 287, wkts: 11, mom: '—', score: '287/6', oppScore: '144/11', tournament: 'Pitch Perfect Sports Club Practice Match T-30', overs: 30, matchId: 23356353 },
     ];
 
-    const DEFAULT_FIXTURES = [
-      // Real upcoming fixture from CricHeroes API
-      { day: '11', month: 'Apr', opponent: 'Southern Strikers', venue: 'Aastha Turf Ground, Bengaluru', tournament: 'Aastha Premier League', time: '07:30 AM' },
-    ];
+    const DEFAULT_FIXTURES = [];
 
     const DEFAULT_ACHIEVEMENTS = [];
     // Achievements are manually entered by the team admin via the "+ Add Achievement" button
@@ -3488,7 +3485,7 @@
       renderFixtures();
       updateSeasonStats();
       updateCharts();
-      showToast('🏏 CricHeroes data loaded — 8 real matches + upcoming fixture!');
+      showToast('🏏 CricHeroes data loaded!');
     }
 
     /* ══════════════════════════════════════
@@ -4231,7 +4228,8 @@
         }
 
         // ── 4. Sync upcoming fixtures ─────────────────────
-        if (Array.isArray(d.upcoming) && d.upcoming.length) {
+        // Always overwrite from JSON (even when empty) so played matches clear automatically
+        if (Array.isArray(d.upcoming)) {
           fixtureData = d.upcoming.map(u => ({
             day: u.day,
             month: u.month,
