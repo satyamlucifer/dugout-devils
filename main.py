@@ -13,11 +13,12 @@ HOW TO GET YOUR COOKIES (one-time setup):
   4. Extract cookie values from -b '...' part
 
 FOR GITHUB ACTIONS — set these repository secrets:
-  CRICHEROES_UDID   → value of udid cookie  (stable)
-  CRICHEROES_CF_BM  → value of __cf_bm      (update monthly)
+  CRICHEROES_UDID   → value of udid cookie  (stable, update when you get a new one)
+  CRICHEROES_CF_BM  → value of __cf_bm      (expires in days/weeks — update when fetch breaks)
 """
 
 import os
+import sys
 import requests
 import json
 import re
@@ -27,8 +28,8 @@ from datetime import datetime, timezone
 # ─────────────────────────────────────────────
 # CONFIG — reads env vars first, then fallback
 # ─────────────────────────────────────────────
-UDID   = os.environ.get("CRICHEROES_UDID",   "d366e93bfc229d57553a4cd0461e1656")
-CF_BM  = os.environ.get("CRICHEROES_CF_BM",  "")   # leave blank → script tries without it
+UDID  = os.environ.get("CRICHEROES_UDID",  "357dcbc28df8a6307bbd35bd1b0aebb3")
+CF_BM = os.environ.get("CRICHEROES_CF_BM", "")
 
 COOKIES = {"udid": UDID}
 if CF_BM:
@@ -40,32 +41,54 @@ BASE      = "https://cricheroes.com"
 API_BASE  = "https://api.cricheroes.in"
 API_KEY   = "cr!CkH3r0s"   # public API key found in browser requests
 
+# Headers that exactly match the working browser curl for _next/data fetches
 NEXT_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
-    "Accept": "*/*",
-    "Accept-Language": "en-GB,en;q=0.7",
-    "X-Nextjs-Data": "1",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-origin",
-    "Sec-GPC": "1",
+    "User-Agent":        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "Accept":            "*/*",
+    "Accept-Language":   "en-GB,en;q=0.7",
+    "sec-ch-ua":         '"Not:A-Brand";v="99", "Brave";v="145", "Chromium";v="145"',
+    "sec-ch-ua-mobile":  "?0",
+    "sec-ch-ua-platform": '"macOS"',
+    "Priority":          "u=1, i",
+    "Sec-Fetch-Dest":    "empty",
+    "Sec-Fetch-Mode":    "cors",
+    "Sec-Fetch-Site":    "same-origin",
+    "Sec-GPC":           "1",
+    "X-Nextjs-Data":     "1",
+}
+
+# Headers for the HTML page fetch (extracting buildId).
+# Uses navigate mode instead of cors.
+HTML_HEADERS = {
+    "User-Agent":        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "Accept":            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept-Language":   "en-GB,en;q=0.7",
+    "sec-ch-ua":         '"Not:A-Brand";v="99", "Brave";v="145", "Chromium";v="145"',
+    "sec-ch-ua-mobile":  "?0",
+    "sec-ch-ua-platform": '"macOS"',
+    "Sec-Fetch-Dest":    "document",
+    "Sec-Fetch-Mode":    "navigate",
+    "Sec-Fetch-Site":    "none",
+    "Sec-Fetch-User":    "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-GPC":           "1",
 }
 
 # Separate session for the REST API (api.cricheroes.in)
 rest_session = requests.Session()
 rest_session.headers.update({
-    "User-Agent": NEXT_HEADERS["User-Agent"],
-    "Accept": "application/json, text/plain, */*",
+    "User-Agent":    NEXT_HEADERS["User-Agent"],
+    "Accept":        "application/json, text/plain, */*",
     "Accept-Language": "en-GB,en;q=0.7",
-    "api-key": API_KEY,
-    "udid": UDID,
-    "device-type": "Chrome: 144.0.0.0",   # ← required by the REST API
-    "Origin": "https://cricheroes.com",
-    "Referer": "https://cricheroes.com/",
+    "api-key":       API_KEY,
+    "udid":          UDID,
+    "device-type":   "Chrome: 145.0.0.0",
+    "Origin":        "https://cricheroes.com",
+    "Referer":       "https://cricheroes.com/",
     "Sec-Fetch-Dest": "empty",
     "Sec-Fetch-Mode": "cors",
     "Sec-Fetch-Site": "cross-site",
-    "Sec-GPC": "1",
+    "Sec-GPC":       "1",
 })
 
 next_session = requests.Session()
@@ -108,16 +131,24 @@ def _cached_build_id() -> str:
 
 def get_build_id() -> str:
     """Try to scrape buildId from the page. On 403/network error, use cached value."""
-    url = f"{BASE}/team-profile/{TEAM_ID}/{TEAM_SLUG}/matches"
-    try:
-        r = next_session.get(url, timeout=15)
-        r.raise_for_status()
-        m = re.search(r'"buildId":"([^"]+)"', r.text)
-        if m:
-            return m.group(1)
-        print("  ⚠️  Could not parse buildId from HTML — trying cached value")
-    except Exception as e:
-        print(f"  ⚠️  HTML fetch blocked ({e}) — trying cached buildId")
+    # Try multiple pages — same buildId is embedded in all Next.js pages.
+    # Some pages may have lighter Cloudflare protection than others.
+    urls_to_try = [
+        f"{BASE}/team-profile/{TEAM_ID}/{TEAM_SLUG}/matches",
+        f"{BASE}/team-profile/{TEAM_ID}/{TEAM_SLUG}/stats",
+        f"{BASE}/team-profile/{TEAM_ID}/{TEAM_SLUG}",
+        BASE,   # home page — often least protected
+    ]
+    for url in urls_to_try:
+        try:
+            r = next_session.get(url, timeout=15, headers=HTML_HEADERS)
+            r.raise_for_status()
+            m = re.search(r'"buildId":"([^"]+)"', r.text)
+            if m:
+                return m.group(1)
+            print(f"  ⚠️  Could not parse buildId from {url}")
+        except Exception as e:
+            print(f"  ⚠️  HTML fetch blocked ({e})")
 
     cached = _cached_build_id()
     if cached:
@@ -140,7 +171,10 @@ def fetch_tab(build_id: str, tab: str) -> dict:
     next_session.headers["Referer"] = f"{BASE}/team-profile/{TEAM_ID}/{TEAM_SLUG}/{tab}"
     r = next_session.get(url, timeout=15)
     r.raise_for_status()
-    return r.json().get("pageProps", {})
+    props = r.json().get("pageProps", {})
+    if not props:
+        print(f"  ⚠️  {tab} tab returned empty pageProps — buildId may be stale")
+    return props
 
 
 # ─────────────────────────────────────────────
@@ -470,6 +504,24 @@ def main():
         print("  📸 Fetching match photos...")
         photos = fetch_photos(page_size=24)
         print(f"  ✅ {len(photos)} photo(s) found")
+
+        # ── Guard: detect stale buildId ──
+        any_tab_data = (
+            stats_tab.get("teamStats") or
+            matches_tab.get("matches") or
+            members_tab.get("members")
+        )
+        if not any_tab_data:
+            print("\n❌ All tab data is empty — the cached buildId is stale and")
+            print("   GitHub Actions IPs are blocked by Cloudflare from fetching a fresh one.")
+            print()
+            print("   Fix: update the CRICHEROES_CF_BM secret with a fresh __cf_bm cookie:")
+            print("     1. Open cricheroes.com in Chrome → DevTools → Network")
+            print("     2. Find any request, copy the __cf_bm cookie value")
+            print("     3. Go to GitHub repo → Settings → Secrets → update CRICHEROES_CF_BM")
+            print()
+            print("   ⚠️  Keeping existing dugout_devils_data.json unchanged.")
+            sys.exit(1)
 
         # ── Print summaries ──
         print_profile(members_tab)

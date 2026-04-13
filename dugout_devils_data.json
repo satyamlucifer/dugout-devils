@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-07T18:13:01.572798+00:00",
+  "lastUpdated": "2026-04-13T10:53:44.984548+00:00",
   "team": {
     "team_id": 11061119,
     "team_name": "Dugout Devils",
@@ -40,9 +40,7 @@
     "share_app_message_matches": "Explore all the matches played by Dugout Devils, only on CricHeroes. \nhttps://chshare.link/team/gSMn9n",
     "is_club_team_admin": 0,
     "is_award_winner": 0,
-    "awards_link": "",
-    "is_user_part_of_team": 1,
-    "can_user_view_qr_code": 1
+    "awards_link": ""
   },
   "stats": [
     {
@@ -51,11 +49,11 @@
     },
     {
       "title": "Upcoming",
-      "value": 1
+      "value": 0
     },
     {
       "title": "Won",
-      "value": 2
+      "value": 3
     },
     {
       "title": "Lost",
@@ -75,15 +73,15 @@
     },
     {
       "title": "Win",
-      "value": "25.0%"
+      "value": "33.3%"
     },
     {
       "title": "Toss Won",
-      "value": 2
+      "value": 3
     },
     {
       "title": "Bat First",
-      "value": 1
+      "value": 2
     },
     {
       "title": "Field First",
@@ -91,14 +89,14 @@
     }
   ],
   "derived": {
-    "played": 8,
-    "wins": 2,
+    "played": 9,
+    "wins": 3,
     "losses": 6,
-    "winPct": 25.0,
-    "avgScore": 194.8,
+    "winPct": 33.3,
+    "avgScore": 204.2,
     "highScore": 287,
     "lowScore": 80,
-    "upcoming": 1
+    "upcoming": 0
   },
   "matches": [
     {
@@ -236,22 +234,26 @@
       "summary": "Dugout Devils won by 143 runs",
       "winBy": "143 runs",
       "mom": "\u2014"
-    }
-  ],
-  "upcoming": [
+    },
     {
       "matchId": 23721255,
       "date": "2026-04-11",
-      "day": "11",
-      "month": "Apr",
       "opponent": "Southern Strikers",
-      "opponentLogo": "https://media.cricheroes.in/team_logo/1730978788450_v3dDsdnPTzWS.jpeg",
       "venue": "Aastha Turf Ground",
+      "result": "W",
+      "score": "280/7",
+      "oppScore": "253/8",
+      "runs": 280,
+      "wkts": 0,
       "tournament": "Aastha Premier League",
       "overs": 30,
-      "time": "07:30 AM"
+      "toss": "Dugout Devils won the toss and elected to bat",
+      "summary": "Dugout Devils won by 27 runs",
+      "winBy": "27 runs",
+      "mom": "\u2014"
     }
   ],
+  "upcoming": [],
   "tournaments": [
     {
       "name": "Pitch Perfect Sports Club Practice Match T-30",
@@ -259,13 +261,13 @@
       "won": 2
     },
     {
-      "name": "Elite League Games",
+      "name": "Aastha Premier League",
       "played": 2,
-      "won": 0
+      "won": 1
     },
     {
-      "name": "Aastha Premier League",
-      "played": 1,
+      "name": "Elite League Games",
+      "played": 2,
       "won": 0
     },
     {
@@ -340,7 +342,7 @@
       "role": "Player",
       "isCaptain": false,
       "isAdmin": false,
-      "isPro": false,
+      "isPro": true,
       "batterType": "",
       "bowlerType": "",
       "profileUrl": "https://cricheroes.com/player-profile/7713060/ayush-tibrewala"
@@ -419,7 +421,7 @@
       "isCaptain": false,
       "isAdmin": false,
       "isPro": true,
-      "batterType": "Hard Hitter",
+      "batterType": "Accumulator",
       "bowlerType": "Wildcard",
       "profileUrl": "https://cricheroes.com/player-profile/14781101/hemant-dhanuka"
     },
@@ -511,7 +513,7 @@
       "isAdmin": false,
       "isPro": true,
       "batterType": "Accumulator",
-      "bowlerType": "Aspirant",
+      "bowlerType": "Wildcard",
       "profileUrl": "https://cricheroes.com/player-profile/14819847/rohit"
     },
     {
@@ -543,7 +545,7 @@
     {
       "id": 49352846,
       "name": "Satyam Kumar",
-      "photo": "https://media.cricheroes.in/default/user_profile.png",
+      "photo": "https://media.cricheroes.in/user_profile/1775812478600_nS8bcGyKh0eQ.jpg",
       "skill": "",
       "role": "Player",
       "isCaptain": false,
@@ -619,6 +621,19 @@
       "profileUrl": "https://cricheroes.com/player-profile/18039138/surya"
     },
     {
+      "id": 23486575,
+      "name": "Tanweer",
+      "photo": "https://media.cricheroes.in/user_profile/1713785676153_d1ZKwGoISTW9.jpeg",
+      "skill": "",
+      "role": "Player",
+      "isCaptain": false,
+      "isAdmin": false,
+      "isPro": true,
+      "batterType": "Classicist",
+      "bowlerType": "Wildcard",
+      "profileUrl": "https://cricheroes.com/player-profile/23486575/tanweer"
+    },
+    {
       "id": 16951013,
       "name": "Tushar Gupta",
       "photo": "https://media.cricheroes.in/user_profile/1764509056655_8mm3bln0bbX3.jpg",
@@ -640,7 +655,7 @@
       "isCaptain": false,
       "isAdmin": false,
       "isPro": true,
-      "batterType": "Classicist",
+      "batterType": "Accumulator",
       "bowlerType": "Aspirant",
       "profileUrl": "https://cricheroes.com/player-profile/8944170/vinoth-narayanasamy"
     },
@@ -673,6 +688,15 @@
   ],
   "photos": [
     {
+      "id": 1082104,
+      "url": "https://media.cricheroes.in/match_media/1775936305500_tdQ1OWWYUvmu.jpg",
+      "type": "image/jpeg",
+      "orientation": "landscape",
+      "uploadedBy": "Amit Tanwar",
+      "uploadedById": 41810384,
+      "date": "2026-04-11"
+    },
+    {
       "id": 1074181,
       "url": "https://media.cricheroes.in/match_media/1774162181813_lWKYcvzBTPhG.jpeg",
       "type": "image/jpeg",
@@ -691,7 +715,7 @@
       "date": "2026-03-22"
     }
   ],
-  "buildId": "-4-2ILoV9eFMAsvIYTKBc",
+  "buildId": "KoMMzmDKh9SqLY9HVWH6k",
   "schedule": [
     {
       "day": "Tuesday",
